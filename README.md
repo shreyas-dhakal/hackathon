@@ -162,15 +162,15 @@ Sophiie senior engineers and CTO. Judging will take place over a 2-week period f
 
 | Field | Your Answer |
 |-------|-------------|
-| **Name** | |
-| **University / Employer** | |
+| **Name** | Shreyas Dhakal |
+| **University** | Adelaide University|
 
 ### Project
 
 | Field | Your Answer |
 |-------|-------------|
-| **Project Name** | |
-| **One-Line Description** | |
+| **Project Name** |Customer Feedback Agent|
+| **One-Line Description** |Once the job is done, it contacts the customers and asks for a review |
 | **Demo Video Link** | |
 | **Tech Stack** | |
 | **AI Provider(s) Used** | |

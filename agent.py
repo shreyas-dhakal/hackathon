@@ -2,8 +2,8 @@ import os
 from openai import OpenAI
 from pydantic import BaseModel
 
-
-client = OpenAI()
+api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
 
 class SentimentResponse(BaseModel):
     sentiment: str  #what sentiment is it? 3 options, positive, negative or neutral
@@ -22,7 +22,7 @@ def analyze_sentiment(text):
     """
     
     response = client.chat.completions.create(
-        model="gpt-4.1-mini",
+        model="openai/gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a sentiment analysis assistant for a feeback system."},
             {"role": "user", "content": prompt}

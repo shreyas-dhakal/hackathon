@@ -1,47 +1,51 @@
+import smtplib
 import os
-from twilio.rest import Client
-
-# Mocking communication for demo
-
-def send_sms(to_number, message):
-    """
-    Sends an SMS using Twilio.
-    """
-    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
-    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
-    from_number = os.environ.get('TWILIO_PHONE_NUMBER')
-    
-    if account_sid and auth_token and from_number:
-        try:
-            client = Client(account_sid, auth_token)
-            message = client.messages.create(
-                body=message,
-                from_=from_number,
-                to=to_number
-            )
-            print(f"SMS sent to {to_number}: {message.sid}")
-            return True
-        except Exception as e:
-            print(f"Error sending SMS: {e}")
-            return False
-    else:
-        print(f"[MOCK SMS] To: {to_number} | Message: {message}")
-        return True
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def send_email(to_email, subject, body):
+    sender_email = os.environ.get("SENDER_EMAIL")
+    app_password = os.environ.get("EMAIL_APP_PASSWORD")
+
+    if not sender_email or not app_password:
+        print("[MOCK EMAIL] Missing credentials")
+        return False
+
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = sender_email
+        msg["To"] = to_email
+        msg["Subject"] = subject
+
+        msg.attach(MIMEText(body, "plain"))
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, app_password)
+            server.send_message(msg)
+
+        print(f"Email sent to {to_email}")
+        return True
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
+
+def send_sms(phone_number, message):
     """
-    Sends an email using a mock approach.
+    Send SMS message (mock implementation).
+    In production, you would integrate with Twilio or similar service.
     """
-    # use smtplib or something in other time.
-    print(f"[MOCK EMAIL] To: {to_email} | Subject: {subject} | Body: {body}")
+    print(f"[MOCK SMS] Message sent to {phone_number}: {message}")
     return True
 
 def alert_owner(job_id, customer_name, feedback):
     """
-    Alerts the business owner about a negative experience.
+    Alert the business owner about negative feedback.
     """
-    owner_email = "owner@business.com"
-    subject = f"URGENT: Negative Feedback - Job #{job_id}"
-    body = f"Customer {customer_name} left negative feedback: '{feedback}'. Please follow up immediately."
-    send_email(owner_email, subject, body)
-    print(f"Owner alerted for Job #{job_id}")
+    owner_email = os.environ.get("SENDER_EMAIL")
+    if owner_email:
+        subject = f"[URGENT] Negative Feedback - Job #{job_id}"
+        body = f"Customer {customer_name} left negative feedback:\n\n{feedback}"
+        send_email(owner_email, subject, body)
+    else:
+        print(f"[ALERT] Could not notify owner - no email configured")
